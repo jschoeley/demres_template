@@ -1,0 +1,58 @@
+---
+title: |
+  An approximation to the Demographic Research style
+author:
+  - Author 1^[Here]
+  - Author 2^[There]
+output:
+  pdf_document:
+    keep_tex: yes
+    template: demogre.tex
+    citation_package: natbib
+bibliography: references.bib
+background: |
+  What is the motivation for this submission? Why read it?
+objective: |
+ What specific question(s) does this submission address?
+methods: |
+ How does the submission reach its objective? What data? What methods?
+results: |
+ What are the main findings?
+conclusion: |
+  What do the findings mean?
+contribution: |
+ What new contribution does this submission make to the scientific literature?
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+# Figures
+
+When it comes to proportions, the number "three" is quite significant: the share of people working in the primary vs. secondary vs. tertiary sector, the proportion of total population change explained by migration vs. fertility vs. mortality, the relative population numbers in young age vs. working age vs. retirement age, the share of a cohort attaining primary vs. secondary vs. tertiary education degrees, the relative number of deaths due to prematurity vs. accidents vs. old age, the share of papers accepted as is vs. revised vs. rejected... three-part proportions of a whole, i.e., ternary compositions, are a type of data that is both ubiquitous and idiosyncratic enough as to warrant particular attention when it comes to presentation. The ternary diagram and its use throughout the sciences stand as a manifestation of this view.
+
+Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors [@Howarth1996]. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys [@Bancroft1897], the genotype composition of a population [@DeFinetti1926], soil composition [@Davis1927], or the potential for flammability given different mixtures of three gases [@Zabetakis1965]. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions [@Kvitkin1932].
+
+```{r fig.cap='Demonstration of the ternary balance scheme showing the composition of educational attainment by region in Europe 2016. Data by Eurostat.'}
+knitr::include_graphics('figure1.pdf')
+```
+
+Wherever three-part compositions are available by geographical region or other pairs of ordered attributes such as cohort and age, one faces the challenge of visualizing ternary compositions on a surface such as the surface of the Earth or the period-age Lexis surface. The *ternary balance scheme* [@Brewer1994] is a color scale suited to that task. The technique encodes the relative shares among three parts as a mixture of three primary colors. Figure 1B shows the proportions of people with either "lower secondary or less," "secondary," or "tertiary" educational attainment by European region in 2016. Lower degrees are mapped to yellow, secondary to cyan, and tertiary to magenta. The more pronounced the yellow in a region, the higher the share of people with lower education. The same logic applies to the two other education categories. The more grayish a region is colored, the more balanced the three proportions are with a perfect grey signifying an equal share of people in all three education categories. A ternary diagram is used as a color key (see Figure 1A) and doubles as a visualization of the distribution of data marginalized over the geographical surface.
+
+Published examples of the ternary balance scheme include maps of population compositions by political alignment, education and workforce status [@Dorling2012; @Graetz2019; @Brewer1994], geological maps of soil composition [@Metternicht2003], arctic sea ice coverage by type [@Denil2015] or land cover compositions by type of forest [@Pirzamanbein2020; @Steidinger2019]. @Schoeley2017 employed the scheme to visualize the distribution of deaths by cause among the French population on a period by age surface.
+
+![The "tricolore" package for the statistical programming language R implements the centered ternary balance color scheme and provides a user interface for quickly testing different parametrizations.](figure2.png)
+
+# Tables
+
+```{r}
+knitr::kable(head(iris), caption = 'A table.')
+```
+
+
