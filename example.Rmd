@@ -18,7 +18,7 @@ methods: |
  How does the submission reach its objective? What data? What methods?
 results: |
  What are the main findings?
-conclusion: |
+conclusions: |
   What do the findings mean?
 contribution: |
  What new contribution does this submission make to the scientific literature?
