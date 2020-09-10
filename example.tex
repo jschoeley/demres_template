@@ -21,6 +21,12 @@
 \documentclass[10pt,twoside,reqno]{article}
 \raggedbottom
 
+%--- Font/encoding -----------------------------------------------------
+
+\usepackage[utf8]{inputenc} % .tex-file text encoding
+\usepackage[T1]{fontenc}    % vector fonts and special chars in output
+\usepackage{times}          % Times Roman font family
+
 %--- Constants ---------------------------------------------------------
 
 % provided by YAML header of markdown file
@@ -52,12 +58,6 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 % number of authors
 \newcounter{authorcount}
    \stepcounter{authorcount}  \stepcounter{authorcount} 
-
-%--- Font/encoding -----------------------------------------------------
-
-\usepackage[utf8]{inputenc} % .tex-file text encoding
-\usepackage[T1]{fontenc}    % vector fonts and special chars in output
-\usepackage{times}          % Times Roman font family
 
 %--- Maths -------------------------------------------------------------
 
