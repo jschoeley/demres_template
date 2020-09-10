@@ -1,27 +1,151 @@
 ---
 title: |
-  An approximation to the Demographic Research style
+  (R)Markdown template for Demographic Research Journal
+shorttitle: 'Demographic Research style'
 author:
-  - Author 1^[Here]
-  - Author 2^[There]
+  - first: 'First'
+    last: 'Last'
+    affil: 'Department, University, Country.'
+    email: 'fooa@bar.com'
+  - first: 'First'
+    last: 'Last'
+    affil: 'Department, University, Country.'
+    email: 'foob@bar.com'
 output:
-  pdf_document:
+  bookdown::pdf_document2:
     keep_tex: yes
-    template: demogre.tex
+    template: drtemplate.tex
     citation_package: natbib
+    highlight: monochrome
 bibliography: references.bib
-background: |
-  What is the motivation for this submission? Why read it?
-objective: |
- What specific question(s) does this submission address?
-methods: |
- How does the submission reach its objective? What data? What methods?
-results: |
- What are the main findings?
-conclusions: |
-  What do the findings mean?
-contribution: |
- What new contribution does this submission make to the scientific literature?
+abstract:
+  background: |
+    What is the motivation for this submission? Why read it?
+  objective: |
+    What specific question(s) does this submission address?
+  methods: |
+    How does the submission reach its objective? What data? What methods?
+  results: |
+    What are the main findings?
+  conclusions: |
+    What do the findings mean?
+  contribution: |
+    What new contribution does this submission make to the scientific literature?
+blurb: |
+  This article is part of the Special Collection on "Data Visualization,"
+  organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.
+drstartpage: '900'
+drarticle: '5'
+drvolume: '8'
+drdatepub: '20 September 2020'
+drcat: 'Research article'
+hyphenation: de-mo-gra-phic Bayesian
+appendix:
+  - |
+    ```r
+    #' Get Stratified Life-table From Survival Data
+    #'
+    #' Aggregate individual level survival data into a stratified
+    #' life-tables with prespecified age-groups using the assumptions of
+    #' piecewise-constant hazards.
+    #'
+    #' @param df a data frame
+    #' @param x time at censoring or event
+    #' @param event event indicator, 0 if censoring, 1 if event
+    #' @param cuts vector of cuts for life-table age groups
+    #' @param ... strata
+    #'
+    #' @author Jonas Schöley
+    GetLifeTable <- function (df, x, event, cuts, ...) {
+    
+      x_i = enquo(x); event_i = enquo(event); strata = enexprs(...)
+    
+      lt <-
+        df %>%
+        # aggregate individual level event and censoring times
+        # into predefined age groups
+        mutate(
+          j =
+            .bincode(
+              x = !!x_i, breaks = cuts,
+              # [a, b)
+              right = FALSE, include.lowest = FALSE
+            ),
+          x_jk =
+            cuts[j]
+        ) %>%
+        group_by(!!!strata, j, x_jk) %>%
+        summarise(
+          # total observed deaths in interval
+          D_jk = sum(!!event_i),
+          # total observed censorings in interval
+          C_jk = sum(!(!!event_i)),
+          # average time spent in interval for
+          # those who leave during interval (by death or censoring)
+          a_jk = mean(!!x_i - first(x_jk))
+        ) %>%
+        ungroup() %>%
+        # add predefined age intervals to table where no deaths or
+        # censorings occoured
+        complete(
+          nesting(x_jk = head(cuts, -1), j = 1:length(head(cuts, -1))),
+          nesting(!!!strata),
+          fill = list(D_jk = 0, C_jk = 0, a_jk = NA)
+        ) %>%
+        arrange(!!!strata, x_jk) %>%
+        mutate(
+          k = group_indices(., !!!strata)
+        ) %>%
+        group_by(k) %>%
+        # calculate life-table
+        mutate(
+          # width of the interval
+          n_jk =
+            c(diff(x_jk), last(cuts)-last(x_jk)),
+          # observed population alive at start of interval
+          N_jk =
+            head(cumsum(c(sum(C_jk+D_jk), -(C_jk+D_jk))), -1),
+          # total person-time of exposure over interval
+          O_jk =
+            (N_jk-D_jk-C_jk)*n_jk +
+            ifelse(is.na(a_jk), 0, a_jk*(D_jk+C_jk)),
+          # mortality rate over interval
+          m_jk =
+            ifelse(O_jk == 0, 0, D_jk/O_jk),
+          # probability of surviving interval
+          # assuming constant force of mortality
+          p_jk =
+            exp(-m_jk*n_jk),
+          # probability of death during the interval given survival
+          # to interval
+          q_jk =
+            1-p_jk,
+          # probability of survival until interval start
+          l_jk =
+            cumprod(c(1, head(p_jk, -1))),
+          # probability of death in interval
+          d_jk =
+            c(-diff(l_jk), last(l_jk)*last(q_jk))
+        ) %>%
+        # distribution of stratum-specific exposures by age
+        group_by(j) %>%
+        mutate(
+          pi_jk = O_jk/sum(O_jk)
+        ) %>%
+        ungroup() %>%
+        select(
+          k, j, !!!strata, x_jk, n_jk, N_jk, a_jk, O_jk, D_jk, C_jk,
+          m_jk, q_jk, l_jk, d_jk, pi_jk
+        )
+    
+      return(lt)
+    
+    }
+    ```
+  - |
+    ```{r, eval=TRUE, echo=TRUE, fig.cap = 'The cars data set'}
+    plot(cars)
+    ```
 ---
 
 ```{r setup, include=FALSE}
@@ -29,30 +153,111 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  cache = FALSE
+  cache = FALSE,
+  fig.env='figure'
 )
 ```
 
-# Figures
+# Introduction
 
-When it comes to proportions, the number "three" is quite significant: the share of people working in the primary vs. secondary vs. tertiary sector, the proportion of total population change explained by migration vs. fertility vs. mortality, the relative population numbers in young age vs. working age vs. retirement age, the share of a cohort attaining primary vs. secondary vs. tertiary education degrees, the relative number of deaths due to prematurity vs. accidents vs. old age, the share of papers accepted as is vs. revised vs. rejected... three-part proportions of a whole, i.e., ternary compositions, are a type of data that is both ubiquitous and idiosyncratic enough as to warrant particular attention when it comes to presentation. The ternary diagram and its use throughout the sciences stand as a manifestation of this view.
+Lorem ipsum dolor sit amet, id mel oratio lucilius eloquentiam, nam cu mazim erant aliquip. Nam et minim abhorreant, ferri minimum facilisis ad sit. In cum summo civibus appareat. Mei cu legimus accusata dissentiet. Qui illud gloriatur te. Probatus accommodare ut est, sed et atqui equidem dignissim.
 
-Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors [@Howarth1996]. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys [@Bancroft1897], the genotype composition of a population [@DeFinetti1926], soil composition [@Davis1927], or the potential for flammability given different mixtures of three gases [@Zabetakis1965]. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions [@Kvitkin1932].
+Soluta legimus qui id, nam semper malorum ut. Est magna clita civibus id. Pro ne summo animal. Ne mucius partiendo sit, ne eos natum quodsi periculis.
+
+Te usu movet nominavi, eu eum quod consul. Justo eligendi concludaturque no eam, aliquam fuisset convenire vis ne, purto vide instructior ex duo. An solet appetere sit, ea vis dolore aliquid scaevola, has omnes dolores eu. Eu per enim dolor civibus, no usu consul propriae. Vix id sale civibus definitiones, quis soluta an eum.
+
+# Figures and Tables
+
+Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors [@Howarth1996]. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys [@Bancroft1897], the genotype composition of a population [@DeFinetti1926], soil composition [@Davis1927], or the potential for flammability given different mixtures of three gases [@Zabetakis1965]. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions [@Kvitkin1932].^[A footnote.]
 
 ```{r fig.cap='Demonstration of the ternary balance scheme showing the composition of educational attainment by region in Europe 2016. Data by Eurostat.'}
 knitr::include_graphics('figure1.pdf')
 ```
 
-Wherever three-part compositions are available by geographical region or other pairs of ordered attributes such as cohort and age, one faces the challenge of visualizing ternary compositions on a surface such as the surface of the Earth or the period-age Lexis surface. The *ternary balance scheme* [@Brewer1994] is a color scale suited to that task. The technique encodes the relative shares among three parts as a mixture of three primary colors. Figure 1B shows the proportions of people with either "lower secondary or less," "secondary," or "tertiary" educational attainment by European region in 2016. Lower degrees are mapped to yellow, secondary to cyan, and tertiary to magenta. The more pronounced the yellow in a region, the higher the share of people with lower education. The same logic applies to the two other education categories. The more grayish a region is colored, the more balanced the three proportions are with a perfect grey signifying an equal share of people in all three education categories. A ternary diagram is used as a color key (see Figure 1A) and doubles as a visualization of the distribution of data marginalized over the geographical surface.
-
-Published examples of the ternary balance scheme include maps of population compositions by political alignment, education and workforce status [@Dorling2012; @Graetz2019; @Brewer1994], geological maps of soil composition [@Metternicht2003], arctic sea ice coverage by type [@Denil2015] or land cover compositions by type of forest [@Pirzamanbein2020; @Steidinger2019]. @Schoeley2017 employed the scheme to visualize the distribution of deaths by cause among the French population on a period by age surface.
-
 ![The "tricolore" package for the statistical programming language R implements the centered ternary balance color scheme and provides a user interface for quickly testing different parametrizations.](figure2.png)
 
-# Tables
-
 ```{r}
-knitr::kable(head(iris), caption = 'A table.')
+knitr::kable(head(iris), caption = 'A table with a caption that stretches across two lines. Nearly there... Done. Does it align nicely?', booktabs = TRUE)
 ```
 
 
+# Equations
+
+Given the observed death counts $D_{jk}$ in age group $j$ and stratum $k$ and associated person-days of exposure to risk $O_{jk}$ I fit the model
+
+\begin{equation}
+  \begin{aligned}
+    D_{jk} &\sim \text{Pois}\left(\lambda_{jk}O_{jk}\right) \\
+    \lambda_{jk} &= e^{\beta_{0k} +
+    \beta_{1k}\log(x_{jk}+1) +
+    \beta_{2k}\log^2(x_{jk}+1)},
+  \end{aligned}
+(\#eq:themodel)
+\end{equation}
+
+where $\lambda_{jk}$ are mortality rates by age group and stratum. For each stratum, a smooth hazard is recovered by evaluating $\lambda_{jk}$ over a continuous range of ages $x$.
+
+The stratum specific coefficients $\beta_{0k}$, $\beta_{1k}$, $\beta_{2k}$ are sums of baseline coefficients $\beta$, prematurity effects $\beta^\text{Pm}$, prematurity-birth weight interactions $\beta^{\text{Pm}\times\text{Bw}}$, and prematurity-birth weight-Apgar interactions $\beta^{\text{Pm}\times\text{Bw}\times\text{Ap}}$ resulting in the multilevel structure
+
+$$
+\left(\begin{aligned}
+\beta_{0k} \\
+\beta_{1k} \\
+\beta_{2k}
+\end{aligned}\right) =
+\underbrace{\left(\begin{aligned}
+\beta_0 \\
+\beta_1 \\
+\beta_2
+\end{aligned}\right)}_{\substack{\text{lvl 0} \\ \text{ baseline coef.}}} +
+\underbrace{\left(\begin{aligned}
+\beta_{0,p[k]}^\text{Pm} \\
+\beta_{1,p[k]}^\text{Pm} \\
+\beta_{2,p[k]}^\text{Pm}
+\end{aligned}\right)}_{\substack{\text{lvl 1} \\ \text{ deviations by} \\ \text{prematurity}}} +
+\underbrace{\left(\begin{aligned}
+\beta_{0,p[k],b[k]}^{\text{Pm}\times\text{Bw}} \\
+\beta_{1,p[k],b[k]}^{\text{Pm}\times\text{Bw}} \\
+\beta_{2,p[k],b[k]}^{\text{Pm}\times\text{Bw}}
+\end{aligned}\right)}_{\substack{\text{lvl 2} \\ \text{ deviations by} \\ \text{birth weight given} \\ \text{prematurity}}} +
+\underbrace{\left(\begin{aligned}
+\beta_{0,p[k],b[k],a[k]}^{\text{Pm}\times\text{Bw}\times\text{Ap}} \\
+\beta_{1,p[k],b[k],a[k]}^{\text{Pm}\times\text{Bw}\times\text{Ap}} \\
+\beta_{2,p[k],b[k],a[k]}^{\text{Pm}\times\text{Bw}\times\text{Ap}}
+\end{aligned}\right)}_{\substack{\text{lvl 3} \\ \text{ deviations by} \\ \text{Apgar given} \\ \text{prematurity and} \\ \text{birth weight}}},
+$$
+
+where $p[k], b[k]$ and $a[k]$ denote the prematurity, birth weight and Apgar level associated with stratum $k$. Except for the baseline $\beta$'s each set of coefficients is assumed to be drawn from a multivariate-Normal distribution with zero mean and covariance matrix
+
+$$
+\Sigma = \begin{pmatrix}
+    \sigma^2_{\beta_0} & \sigma_{\beta_0\beta_1} & \sigma_{\beta_0\beta_2} \\
+    \sigma_{\beta_0\beta_1} & \sigma^2_{\beta_1} & \sigma_{\beta_1\beta_2} \\
+    \sigma_{\beta_0\beta_2} & \sigma_{\beta_1\beta_2} & \sigma^2_{\beta_2}
+    \end{pmatrix},
+$$
+
+with separate estimates for levels one to three.
+
+# Lists
+
+- Ringo
+  - Drums
+- George
+  - Guitar
+- Paul
+  - Bass
+  - Piano
+- John
+  - Guitar
+  - Piano
+  
+# Section
+
+## Subsection
+
+### Subsubsection
+
+# Acknowledgments
+
+I'd like to thank my husband whose caring love allowed me to fully concentrate on my work.

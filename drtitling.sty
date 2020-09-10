@@ -1,0 +1,236 @@
+%%
+%% This is file `drtitling.sty',
+%% It is a modified version auf 'titling.sty' 
+%% for the online journal Demographic Research.
+%%
+%% modified by Jana Korsinek
+%% 26 March 2009 
+%%
+%% -----------------------------------------------------------------
+%%   'titling.sty'
+%%   Author: Peter Wilson (Herries Press) pandgwilson at earthlink dot net
+%%   Copyright 2000 --- 2004 Peter R. Wilson
+%% -----------------------------------------------------------------
+%% 
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{drtitling}[2004/09/26 v2.1c maketitle typesetting]
+
+\newcommand{\titlefont}[1]{\def\@bstitlefont{#1}}
+\newcommand{\posttitle}[1]{\def\@bsposttitle{#1}}
+\newcommand{\authorfont}[1]{\def\@bsauthorfont{#1}}
+\newcommand{\postauthor}[1]{\def\@bspostauthor{#1}}
+
+\if@titlepage
+  \titlefont{\begin{center}\large}
+  \posttitle{\par\end{center}\vskip 0em}
+  \authorfont{\begin{center}
+    \normalsize \lineskip 0em%
+    \begin{tabular}[t]{c}}
+  \postauthor{\end{tabular}\par\end{center}}
+\else
+  \titlefont{\begin{center}\large}
+  \posttitle{\par\end{center}\vskip 0em}
+  \authorfont{\begin{center}
+    \normalsize \lineskip 0em%
+    \begin{tabular}[t]{c}}
+  \postauthor{\end{tabular}\par\end{center}}
+\fi
+
+\newcommand{\thanksmarkseries}[1]{%
+  \def\@bsmarkseries{\renewcommand{\thefootnote}{\@nameuse{#1}{footnote}}}}
+\newcommand{\symbolthanksmark}{\thanksmarkseries{\fnsymbol}}
+\newcommand{\@bscontmark}{\setcounter{footnote}{0}}
+\newcommand{\continuousmarks}{\def\@bscontmark{}}
+\newcommand{\thanksheadextra}[2]{%
+  \def\@bsthanksheadpre{#1}%
+  \def\@bsthanksheadpost{#2}}
+\newcommand{\thanksfootextra}[2]{%
+  \def\thanksfootpre{#1}%
+  \def\thanksfootpost{#2}}
+
+\DeclareRobustCommand{\thanksmark}[1]{ \footnotemark[#1]}
+\newcommand{\thanksgap}[1]{\hspace{#1}}
+\newcommand{\tamark}{\@thefnmark}
+
+\newlength{\thanksmarkwidth}
+\newlength{\thanksmargin}
+\newcommand{\thanksscript}[1]{\textsuperscript{#1}}
+\newcommand{\makethanksmarkhook}{}
+
+\newcommand{\thanksfootmark}{%
+  \hb@xt@\thanksmarkwidth{\hfil\normalfont\thanksscript{%
+    \thanksfootpre \tamark \thanksfootpost}}}
+
+\newcommand{\makethanksmark}{%
+  \leavevmode%
+  \makethanksmarkhook\relax
+  \parindent 1em\noindent
+  \leftskip\thanksmargin\relax
+  \advance\leftskip \thanksmarkwidth \null\nobreak\hskip -\leftskip
+  \thanksfootmark
+}
+
+\newcommand{\usethanksrule}{\let\footnoterule\thanksrule}
+\newcommand{\cancelthanksrule}{\let\footnoterule\@bsfootnoterule}
+
+\if@titlepage
+  \thanksmarkseries{arabic}    % normal footnote numbers
+\else
+  \thanksmarkseries{arabic}
+\fi
+\thanksheadextra{}{}
+\thanksfootextra{}{\ }
+\setlength{\thanksmarkwidth}{0.7em}
+\setlength{\thanksmargin}{-0.6em}
+
+\AtBeginDocument{%
+  \let\thanksrule\footnoterule
+  \let\@bsfootnoterule\footnoterule
+}
+
+\newlength{\droptitle}
+\setlength{\droptitle}{0pt}
+
+\providecommand{\maketitle}{}
+\if@titlepage
+  \renewcommand{\maketitle}{\begin{titlepage}%
+    \let\footnotesize\small
+    \let\footnoterule\relax
+    \let \footnote \thanks
+    \@bsmarkseries
+      \def\@makefnmark{\rlap{\@textsuperscript{%
+         \normalfont\@bsthanksheadpre \tamark \@bsthanksheadpost}}}%
+      \long\def\@makefntext##1{\makethanksmark ##1}
+    \null\vfil
+    \vskip 60\p@
+    {\@bstitlefont \@title \@bsposttitle}
+    {\@bsauthorfont \@author \@bspostauthor}
+    \par
+    \@thanks
+    \vfil\null
+    \end{titlepage}%
+    \@bscontmark  %  \setcounter{footnote}{0}%
+%%%    \@bsmtitlempty
+  } % end titlepage defs
+\else
+  \renewcommand{\maketitle}{\par
+    \begingroup
+      \@bsmarkseries
+      \def\@makefnmark{\rlap{\@textsuperscript{%
+         \normalfont\@bsthanksheadpre \tamark \@bsthanksheadpost}}}%
+      \long\def\@makefntext##1{\makethanksmark ##1}
+      \if@twocolumn
+        \ifnum \col@number=\@ne
+          \@maketitle
+        \else
+          \twocolumn[\@maketitle]%
+        \fi
+      \else
+        \newpage
+        \global\@topnum\z@
+        \@maketitle
+      \fi
+      \thispagestyle{plain}\@thanks
+    \endgroup
+    \@bscontmark  %  \setcounter{footnote}{0}%
+%%%    \@bsmtitlempty
+  } % end non-titlepage
+
+  \def\@maketitle{%
+    \newpage
+    {\@bstitlefont \@title \@bsposttitle} %% add footnote here
+    {\@bsauthorfont \@author \@bspostauthor}
+    \par
+    \vskip 1.5em}
+\fi
+
+\newenvironment{titlingpage}%
+  {%
+   \let\footnoterule\relax
+   \let\footnotesize\small
+   \if@twocolumn
+     \@restonecoltrue\onecolumn
+   \else
+     \@restonecolfalse
+   \fi
+   \thispagestyle{empty}
+   \setcounter{page}\@ne
+  }{%
+   \thispagestyle{empty}
+   \if@restonecol\twocolumn \else \newpage \fi
+   \if@twoside\else \setcounter{page}\@ne\fi}
+
+\newcommand{\calccentering}[2]{
+  #1 = \paperwidth
+  \advance #1 by -\textwidth
+  \divide #1 by \tw@
+  \advance #1 by -#2
+  \advance #1 by -\hoffset
+  \advance #1 by -1in
+}
+
+\newcommand{\emptythanks}{\global\let\@thanks\@empty}
+
+\newcommand{\@bsmtitlempty}{%
+  \global\let\maketitle\relax
+  \global\let\@maketitle\relax
+  \global\let\title\relax
+  \global\let\author\relax
+  \global\let\date\relax
+  \global\let\thanksmarkseries\relax
+  \global\let\thanksheadextra\relax
+  \global\let\thanksfootextra\relax
+  \global\let\thanksmark\relax
+  \global\let\thanksgap\relax
+}
+
+\newcommand{\keepthetitle}{%
+  \@bsmtitlempty
+  \global\let\thanks\relax
+  \global\let\and\relax
+  \global\let\@thanks\@empty
+  \global\let\@title\@empty
+  \global\let\@author\@empty
+  \global\let\@date\@empty
+}
+
+\providecommand{\killtitle}{}
+\renewcommand{\killtitle}{%
+  \keepthetitle
+  \global\let\thetitle\relax
+  \global\let\theauthor\relax
+  \global\let\thedate\relax
+}
+
+\providecommand{\appendiargdef}[2]{\begingroup
+  \toks@\expandafter{#1{##1}#2}%
+  \edef\@bsx{\endgroup \def\noexpand#1####1{\the\toks@}}%
+  \@bsx}
+
+\appendiargdef{\title}{%
+  \begingroup
+    \renewcommand{\thanks}[1]{}
+    \renewcommand{\thanksmark}[1]{}
+    \renewcommand{\thanksgap}[1]{}
+    \protected@xdef\thetitle{#1}
+  \endgroup}
+\appendiargdef{\author}{%
+  \begingroup
+    \renewcommand{\thanks}[1]{}
+    \renewcommand{\and}{\unskip, }
+    \renewcommand{\thanksmark}[1]{}
+    \renewcommand{\thanksgap}[1]{}
+    \protected@xdef\theauthor{#1}
+  \endgroup}
+\appendiargdef{\date}{%
+  \begingroup
+    \renewcommand{\thanks}[1]{}
+    \renewcommand{\thanksmark}[1]{}
+    \renewcommand{\thanksgap}[1]{}
+    \protected@xdef\thedate{#1}
+  \endgroup}
+
+\endinput
+%%
+%% End of file `drtitling.sty'.

@@ -1,0 +1,644 @@
+%%% Demographic Research Pandoc Style
+%%%
+%%% Jonas Schöley
+%%% jschoeley@gmail.com
+%%%
+%%% 2020-09-10
+%%%
+%%% Depends on file "drbibstyle.bst" for custom bibliography styling,
+%%% "drtitling" for title formating,
+%%% "drlogo.pdf" for the Demographic Research logo.
+%%%
+%%% Based upon the work of
+%%% Jana Korsinek
+%%% Peter Wilhelm
+%%% Peter Wilson
+%%% and very probably others such as the countless student assistants
+%%% who, over the years, worked at Demographic Research.
+
+%--- Documentclass -----------------------------------------------------
+
+\documentclass[10pt,twoside,reqno]{article}
+\raggedbottom
+
+%--- Constants ---------------------------------------------------------
+
+% provided by YAML header of markdown file
+
+% document title
+$if(title)$
+  \def \thetitle {$title$}
+$else$
+  \def \thetitle {The title}
+$endif$
+$if(shorttitle)$
+  \def \theshorttitle {$shorttitle$}
+$else$
+  \def \theshorttitle {The short title}
+$endif$
+
+% first page of document in volume
+$if(drstartpage)$
+  \def \thestartpage {$drstartpage$}
+$else$
+  \def \thestartpage {1}
+$endif$
+
+% article and volume numbers
+$if(drarticle)$
+  \def \thearticle {$drarticle$}
+$else$
+  \def \thearticle {1}
+$endif$
+$if(drvolume)$
+  \def \thevolume {$drvolume$}
+$else$
+  \def \thevolume {1}
+$endif$
+
+% date of publication
+$if(drdatepub)$
+  \def \thedatepub {$drdatepub$}
+$else$
+  \def \thedatepub {1 January 1901}
+$endif$
+
+% category of article
+$if(drcat)$
+  \def \thecat {$drcat$}
+$else$
+  \def \thecat {Article category}
+$endif$
+
+% publication blurb
+$if(blurb)$
+  \def \theblurb {$blurb$}
+$endif$
+
+% author listings
+$if(author)$
+  \def \theheadingauthor {$for(author)$$author.last$$sep$, $endfor$}
+$else$
+  \def \theheadingauthor {Last}
+$endif$
+
+% number of authors
+\newcounter{authorcount}
+$if(author)$
+  $for(author)$ \stepcounter{authorcount} $endfor$
+$else$
+  \stepcounter{authorcount}
+$endif$
+
+%--- Font/encoding -----------------------------------------------------
+
+\usepackage[utf8]{inputenc} % .tex-file text encoding
+\usepackage[T1]{fontenc}    % vector fonts and special chars in output
+\usepackage{times}          % Times Roman font family
+
+%--- Maths -------------------------------------------------------------
+
+\usepackage{amsmath}  % various maths features
+\usepackage{amssymb}  % maths symbols
+\usepackage{mathrsfs} % maths script fonts
+
+%--- Misc --------------------------------------------------------------
+
+\usepackage{etoolbox} % allows to inject commands inside environments
+\usepackage{placeins} % control the placement of floats via \FloatBarrier
+\usepackage{xcolor}   % for colored links
+
+%--- Figures -----------------------------------------------------------
+
+$if(graphics)$
+
+  \usepackage{graphicx} % include external images
+
+  % generate all images so they have a width \cnstmaxfigwidth
+  % images get their normal width if they fit onto the page
+  % images are scaled down if they would overflow the margins
+  \makeatletter
+    \def\cnstmaxfigwidth{
+      \ifdim \Gin@nat@width>\linewidth
+        \linewidth
+      \else \Gin@nat@width
+      \fi
+    }
+  \makeatother
+  \let\Oldincludegraphics\includegraphics
+  \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\cnstmaxfigwidth]{#1}}
+
+  \AfterEndEnvironment{figure}{\FloatBarrier}
+
+$endif$
+
+%--- Captions ----------------------------------------------------------
+
+% define caption style
+\usepackage[hang]{caption}
+\DeclareCaptionLabelSeparator{capsep}{:}
+\DeclareCaptionFormat{capformat}{#1#2\hspace{1cm}#3}
+\DeclareCaptionFont{capfont}{\normalsize\bfseries}
+\captionsetup[figure]{
+            style           = default,
+            indention       = 2.4cm,
+            labelsep        = capsep,
+            format          = capformat,
+            name            = Figure,
+            font            = capfont,
+            labelfont       = capfont,
+            justification   = raggedright,
+            singlelinecheck = false
+}
+\captionsetup[table]{
+            style           = default,
+            indention       = 2.25cm,
+            labelsep        = capsep,
+            format          = capformat,
+            name            = Table,
+            font            = capfont,
+            labelfont       = capfont,
+            justification   = raggedright,
+            singlelinecheck = false
+}
+
+% captions above
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{table}
+\restylefloat{figure}
+
+%--- Localization ------------------------------------------------------
+
+% babel
+\usepackage[english]{babel} % document language/localization
+\usepackage{hyphenat}       % hyphenation rules
+
+% hyphenation rules for specific words
+$if(hyphenation)$
+  \hyphenation{$hyphenation$}
+$else$
+  \hyphenation{}
+$endif$
+
+%--- Bibliography ------------------------------------------------------
+
+\usepackage{natbib}
+\bibpunct [: ] {(} {)} {;} {a} {} {,}
+\setcitestyle{aysep={}}
+\bibliographystyle{drbibstyle}
+\newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
+
+%--- General layout ----------------------------------------------------
+
+% page layout
+\usepackage{geometry}
+\geometry{
+  paperheight = 22cm,
+  paperwidth  = 17cm,
+  top         = 2.54cm,
+  bottom      = 2.54cm,
+  inner       = 2cm,
+  outer       = 2.54cm,
+  footskip    = 11mm,
+  headheight  = 1cm,
+  headsep     = 0.75cm,
+  showframe   = false
+}
+
+% title and cover format
+\usepackage{drtitling}
+
+% spacing
+\setlength{\parskip}{0ex}
+\setlength{\parindent}{.7cm}
+\setlength{\bibsep}{.18cm}
+\setlength{\belowdisplayskip}{15pt} \setlength{\belowdisplayshortskip}{10pt}
+\setlength{\abovedisplayskip}{15pt} \setlength{\abovedisplayshortskip}{10pt}
+
+% avoid orphans and widows
+\widowpenalty = 10000
+\clubpenalty  = 10000
+
+% don't break footnotes
+\interfootnotelinepenalty = 10000
+
+% don't hyphenate across pages
+\brokenpenalty10000\relax
+
+%--- Lists -------------------------------------------------------------
+
+% tight lists
+\providecommand{\tightlist}{%
+  \setlength{\topsep}{0pt}
+  \setlength{\partopsep}{0pt}
+  \setlength{\itemsep}{0pt}
+  \setlength{\parsep}{.9\parskip}
+}
+\makeatletter
+  \def\@listI{%
+    \leftmargin\leftmargini } \let\@listi\@listI \@listi
+  \def\@listii{%
+    \leftmargin\leftmarginii
+    \labelwidth\leftmarginii  \advance \labelwidth-\labelsep
+    }
+\def\@listiii{%
+    \leftmargin\leftmarginiii
+    \labelwidth\leftmarginiii  \advance \labelwidth-\labelsep
+    }
+\makeatother
+
+%--- Sections ----------------------------------------------------------
+
+% section spacing
+\makeatletter
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+                                   {-24pt}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                                     {-24pt}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\makeatother
+
+% section style
+\usepackage[nobottomtitles]{titlesec}
+\titleformat{\section}[hang]{\raggedright\normalfont\bfseries\large}{\arabic{section}.}{1ex}{}
+\titleformat{\subsection}[hang]{\raggedright\normalfont\bfseries}{\arabic{section}.\arabic{subsection}}{1ex}{}
+\titleformat{\subsubsection}[hang]{\raggedright\normalfont\bfseries}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}{1ex}{}
+
+%--- Table of content --------------------------------------------------
+
+% table of content format
+\makeatletter
+\renewcommand*{\@pnumwidth}{3em} % width of toc page number box
+\renewcommand*\l@section[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty
+    \addvspace{1.0em \@plus\p@}%
+    %\setlength\@tempdima{1.5em}%
+    \setlength\@tempdima{4em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode %\bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\hfill \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+\renewcommand*\l@subsection[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty
+    %\addvspace{1.0em \@plus\p@}%
+    %\setlength\@tempdima{1.5em}%
+    \setlength\@tempdima{4em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode %\bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\hfill \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+\renewcommand*\l@subsubsection[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty
+    %\addvspace{1.0em \@plus\p@}%
+    %\setlength\@tempdima{1.5em}%
+    \setlength\@tempdima{4em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode %\bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\hfill \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+\makeatother
+
+%--- Header ------------------------------------------------------------
+
+% define the specific headers and footers to be added to each page
+
+\usepackage{fancyhdr} % page headers
+\pagestyle{empty}
+
+% use short title of title is too long for header
+\newlength{\testlaenge}
+\settowidth{\testlaenge}{\footnotesize\emph{\theheadingauthor}: \thetitle}
+\ifdim410pt<\testlaenge
+  \edef\theheadingtitle{\theshorttitle}
+\else
+  \edef\theheadingtitle{\thetitle}
+\fi
+
+\def\drfootersize{\footnotesize}   % size of footer font
+\renewcommand{\headrulewidth}{0pt} % no headrule
+
+% some latex commands such as ´\maketitle´ automatically run
+% \pagestyle{plain}. this redefines pagestyle "plain" so that nothing
+% is added to header or footer
+\fancypagestyle{plain}{
+  \fancyhf{}
+}
+
+% header and footer regular text
+\fancypagestyle{regular}{
+  \fancyhf{}
+  \fancyhead[LE]{\footnotesize\emph{\theheadingauthor}: \theheadingtitle} \chead{}
+  \fancyhead[RO]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle}
+  \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
+  \fancyfoot[LO,RE]{\drfootersize\href{http://www.demographic-research.org}{http://www.demographic-research.org}}
+}
+% header and footer on title page
+\fancypagestyle{title}{
+  \fancyhf{}
+  \fancyhead[LO]{}
+  \fancyhead[RO]{}
+  \fancyhead[CO,CE]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle\\[1mm]\emph{\thecat}}
+  \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
+  \fancyfoot[LO,RE]{\drfootersize\href{http://www.demographic-research.org}{http://www.demographic-research.org}}
+}
+
+%--- Footnotes ---------------------------------------------------------
+
+% Footnotes
+\usepackage[bottom]{footmisc}
+\setlength{\footnotemargin}{0.6em}
+
+% if you have code in your footnotes, the million macro march
+% kind of bumps into itself.
+% Pandoc, having just rendered your text into LaTeX,
+% knows whether the 'variable' `verbatim-in-note` is True, and
+% If it is, it asks for a  LaTeX package that solves the dilemma:
+%$if(verbatim-in-note)$
+%\usepackage{fancyvrb}
+%$endif$
+
+%--- Code listings -----------------------------------------------------
+
+$if(highlighting-macros)$
+  $highlighting-macros$
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+    numbers=left,fontsize=\footnotesize,commandchars=\\\{\}
+  }
+$endif$
+
+%--- Tables ------------------------------------------------------------
+
+$if(tables)$
+  \usepackage{array,longtable,booktabs,multirow}
+  % -- This is needed because raggedright in table elements redefines \\:
+  \newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
+  \let\PBS=\PreserveBackslash
+
+  % https://tex.stackexchange.com/a/503439
+  \makeatletter
+  \let\tableorig\table
+  \def\table@i[#1]{\tableorig[#1]\scriptsize\sffamily}  % with optional argument
+  \def\table@ii{\tableorig\scriptsize\sffamily}  % without optional argument
+  \def\table{\@ifnextchar[\table@i \table@ii}  % Redefine depending on presence of [
+  \makeatother
+
+
+  \AfterEndEnvironment{table}{\FloatBarrier}
+
+$endif$
+
+%--- Subscripts --------------------------------------------------------
+
+$if(subscript)$
+  \newcommand{\textsubscr}[1]{\ensuremath{_{\scriptsize\textrm{#1}}}}
+$endif$
+
+%--- Links -------------------------------------------------------------
+
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  breaklinks=true,
+  pdftitle={\thetitle}
+}
+
+%--- Includes ----------------------------------------------------------
+
+% header_includes
+$for(header-includes)$
+  $header-includes$
+$endfor$
+
+%--- Title -------------------------------------------------------------
+
+\expandafter\title\expandafter{\expandafter\textbf\expandafter{\thetitle}\vspace{5mm}}
+
+%--- Authors -----------------------------------------------------------
+
+% for title
+$if(author)$
+  \author{$for(author)$\textbf{$author.first$ $author.last$}
+    \thanks{\hspace*{.28ex}$author.affil$ \href{}{\color{blue}$author.email$}.}$sep$\\[2mm]$endfor$\vspace*{4mm}
+  }
+$else$
+  \author{\textbf{First Author}
+  \thanks{Department, University, Country.}}
+$endif$
+
+% for pdf metadata
+$if(author)$
+  \def \themetaauthor {$for(author)$ $author.first$ $author.last$$sep$, $endfor$}
+  \hypersetup{pdfauthor=\themetaauthor}
+$else$
+  \def \themetaauthor {First Author}
+  \hypersetup{pdfauthor=\themetaauthor}
+$endif$
+
+% for cover list
+$if(author)$
+  \newcommand{\drcvrlistauthors}{
+    $for(author)$\large{\textbf{$author.first$\ $author.last$}}$sep$\\\smallskip$endfor$
+  }
+$else$
+  \newcommand{\drcvrlistauthors}{
+    \large{\textbf{First Author}}\\\smallskip
+  }
+$endif$
+
+% for copyright
+$if(author)$
+  \newcommand{\drcvrcrauthors}{
+    \copyright\ \normalsize{\emph{\the\year\ $for(author)$$author.first$ $author.last$$sep$, $endfor$.}}
+  }
+$else$
+  \newcommand{\drcvrcrauthors}{
+    \copyright\ \normalsize{\emph{\the\year\ First Author.}}
+  }
+$endif$
+
+%--- Print cover -------------------------------------------------------
+
+\usepackage{lastpage}
+\setcounter{page}{-1}
+\newcommand{\drpages}{\thestartpage--\pageref*{LastPage}}
+
+\newcommand{\makecover}{\begin{titlepage}%
+  \begin{center}
+    \Oldincludegraphics[width=11.5cm]{drlogo.pdf}
+  \smallskip
+  \rule{12cm}{1mm}\\
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{tabular}{p{8.5cm}}
+    \fontfamily{ptm}\selectfont
+    \large{\textbf{\emph{DEMOGRAPHIC RESEARCH}}}\\
+    \bigskip
+    \fontfamily{ptm}\selectfont\large{\textbf{VOLUME \thevolume, ARTICLE \thearticle, PAGES \drpages}}\\
+    \fontfamily{ptm}\selectfont\large{\textbf{PUBLISHED \MakeUppercase{\thedatepub}}}\\
+    \fontfamily{ptm}\selectfont\normalsize{\href{http://www.demographic-research.org/Volumes/Vol$drvolume$$drarticle$}{http://www.demographic-research.org/Volumes/Vol\thevolume/\thearticle/}}\\
+    \fontfamily{ptm}\selectfont\normalsize{DOI:\quad 10.4054/DemRes.\the\year.\thevolume.\thearticle}\\
+    \medskip
+    \fontfamily{ptm}\selectfont\large{\emph{\thecat}}\\
+    \bigskip
+    \begin{flushleft}
+      \fontfamily{ptm}\selectfont\large{\textbf{{\raggedright\thetitle}}}
+    \end{flushleft}
+    \\[-0.4cm]
+    %\bigskip
+    \drcvrlistauthors
+  \end{tabular}
+  \vfill
+  \begin{tabular}{p{8.5cm}}
+  $if(blurb)$
+    \begin{flushleft}
+    \fontfamily{ptm}\selectfont\footnotesize{\theblurb}
+    \end{flushleft}\\
+  $endif$
+    \drcvrcrauthors\\
+    %\underline{\hspace*{4in}}
+    \smallskip
+    \begin{flushleft}\fontfamily{ptm}\selectfont\footnotesize{\emph{This open-access work is published under the terms of the Creative Commons Attribution 3.0 Germany (CC BY 3.0 DE), which permits use, reproduction, and distribution in any medium, provided the original author(s) and source are given credit.\\ See
+    \href{https://creativecommons.org/licenses/by/3.0/de/legalcode}{https://creativecommons.org/licenses/by/3.0/de/legalcode}}}
+    \end{flushleft}
+  \end{tabular}
+  \end{center}
+\end{titlepage}%
+}
+
+\begin{document}
+
+\makecover
+
+%--- Print TOC ---------------------------------------------------------
+
+\newpage
+\renewcommand{\contentsname}{Contents}
+{\footnotesize \tableofcontents}
+
+%--- Print title -------------------------------------------------------
+
+\newpage
+\setcounter{page}{\thestartpage}
+\maketitle
+\thispagestyle{title}
+
+%--- Print abstract ----------------------------------------------------
+
+\vspace*{-24pt}
+\vspace*{5mm}
+\setlength{\parskip}{0.5em}
+\section*{Abstract}
+$if(abstract.background)$
+  \noindent\textbf{BACKGROUND}\\
+  $abstract.background$
+  \par
+$endif$
+$if(abstract.objective)$
+  \noindent\textbf{OBJECTIVE}\\
+  $abstract.objective$
+  \par
+$endif$
+$if(abstract.methods)$
+  \noindent\textbf{METHODS}\\
+  $abstract.methods$
+  \par
+$endif$
+$if(abstract.results)$
+  \noindent\textbf{RESULTS}\\
+  $abstract.results$
+  \par
+$endif$
+$if(abstract.conclusions)$
+  \noindent\textbf{CONCLUSIONS}\\
+  $abstract.conclusions$
+  \par
+$endif$
+$if(abstract.contribution)$
+  \noindent\textbf{CONTRIBUTION}\\
+  $abstract.contribution$
+$endif$
+\vspace*{12pt}
+
+\setlength{\parskip}{0ex}
+
+%--- Print main text ---------------------------------------------------
+
+% start footnote numbering at <number of authors> + 1
+\setcounter{footnote}{\value{authorcount}}
+\newpage
+\pagestyle{regular}
+
+$body$
+
+%--- Print references --------------------------------------------------
+
+\newpage
+
+\addcontentsline{toc}{section}{\numberline{}References}
+
+\bibliography{$bibliography$}
+
+%--- Print appendix ----------------------------------------------------
+
+$if(appendix)$
+% total number of appendices
+\newcounter{totalappendixcount} $for(appendix)$ \stepcounter{totalappendixcount} $endfor$
+% loop iterator
+\newcounter{currentappendixcount}
+
+% add appendices
+$for(appendix)$
+
+ \stepcounter{currentappendixcount}
+ % if only a single appendix use a different labeling scheme
+ \ifnum\value{totalappendixcount}=1
+   \def \currentappendixlabel {}
+   \def \currentappendixfloatlabel {A}
+ \else
+   \def \currentappendixlabel {\Alph{currentappendixcount}}
+   \def \currentappendixfloatlabel {\Alph{currentappendixcount}}
+ \fi
+
+  \clearpage
+  \section*{Appendix \currentappendixlabel}\FloatBarrier
+  \addcontentsline{toc}{section}{\numberline{}Appendix \currentappendixlabel}
+  \setcounter{section}{0}
+  \renewcommand{\thesection}{\currentappendixfloatlabel-\arabic{section}}
+  \setcounter{figure}{0}
+  \renewcommand{\thefigure}{\currentappendixfloatlabel-\arabic{figure}}
+  \setcounter{table}{0}
+  \renewcommand{\thetable}{\currentappendixfloatlabel-\arabic{table}}
+
+  $appendix$
+
+$endfor$
+$endif$
+
+%--- End document ------------------------------------------------------
+
+\cleardoublepage
+
+\end{document}
