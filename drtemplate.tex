@@ -181,6 +181,17 @@ $else$
   \hyphenation{}
 $endif$
 
+%--- Links -------------------------------------------------------------
+
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks=true,
+  breaklinks=true,
+  colorlinks=false,
+  pdftitle={\thetitle}
+}
+\urlstyle{rm}
+
 %--- Bibliography ------------------------------------------------------
 
 \usepackage{natbib}
@@ -189,8 +200,9 @@ $endif$
 \bibliographystyle{drbibstyle}
 % special doi and url format in bibliography (used in .bst file)
 \newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
-\newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{#1}}}
- % which url prefix to use
+    % use url command to escape special chars in url
+\newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{\url{#1}}}}
+    % which url prefix to use
 \newcommand{\urlprefix}{}
 
 %--- General layout ----------------------------------------------------
@@ -418,16 +430,6 @@ $endif$
 $if(subscript)$
   \newcommand{\textsubscr}[1]{\ensuremath{_{\scriptsize\textrm{#1}}}}
 $endif$
-
-%--- Links -------------------------------------------------------------
-
-\usepackage{hyperref}
-\hypersetup{
-  hidelinks=true,
-  breaklinks=true,
-  colorlinks=false,
-  pdftitle={\thetitle}
-}
 
 %--- Includes ----------------------------------------------------------
 

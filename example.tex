@@ -138,6 +138,17 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 % hyphenation rules for specific words
   \hyphenation{de-mo-gra-phic Bayesian}
 
+%--- Links -------------------------------------------------------------
+
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks=true,
+  breaklinks=true,
+  colorlinks=false,
+  pdftitle={\thetitle}
+}
+\urlstyle{rm}
+
 %--- Bibliography ------------------------------------------------------
 
 \usepackage{natbib}
@@ -146,8 +157,9 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 \bibliographystyle{drbibstyle}
 % special doi and url format in bibliography (used in .bst file)
 \newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
-\newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{#1}}}
- % which url prefix to use
+    % use url command to escape special chars in url
+\newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{\url{#1}}}}
+    % which url prefix to use
 \newcommand{\urlprefix}{}
 
 %--- General layout ----------------------------------------------------
@@ -403,16 +415,6 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 %--- Subscripts --------------------------------------------------------
 
 
-%--- Links -------------------------------------------------------------
-
-\usepackage{hyperref}
-\hypersetup{
-  hidelinks=true,
-  breaklinks=true,
-  colorlinks=false,
-  pdftitle={\thetitle}
-}
-
 %--- Includes ----------------------------------------------------------
 
 % header_includes
@@ -554,7 +556,7 @@ Te usu movet nominavi, eu eum quod consul. Justo eligendi concludaturque no eam,
 \hypertarget{figures-and-tables}{%
 \section{Figures and Tables}\label{figures-and-tables}}
 
-Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors \citep{Howarth1996}. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys \citep{Bancroft1897}, the genotype composition of a population \citep{DeFinetti1926}, soil composition \citep{Davis1927}, or the potential for flammability given different mixtures of three gases \citep{Zabetakis1965}. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions \citep{Kvitkin1932}.\footnote{A footnote \citep{Ware2013}.}
+Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors \citep{Howarth1996}. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys \citep{Bancroft1897}, the genotype composition of a population \citep{DeFinetti1926}, soil composition \citep{Davis1927}, or the potential for flammability given different mixtures of three gases \citep{Zabetakis1965}. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions \citep{Kvitkin1932}.\footnote{A footnote \citep{Ware2013, Denil2015}.}
 
 \begin{figure}
 \centering
