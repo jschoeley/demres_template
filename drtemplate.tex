@@ -187,7 +187,9 @@ $endif$
 \bibpunct [: ] {(} {)} {;} {a} {} {,}
 \setcitestyle{aysep={}}
 \bibliographystyle{drbibstyle}
+% special doi and url format in bibliography (used in .bst file)
 \newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
+\newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{#1}}}
  % which url prefix to use
 \newcommand{\urlprefix}{}
 
@@ -421,8 +423,9 @@ $endif$
 
 \usepackage{hyperref}
 \hypersetup{
-  hidelinks,
+  hidelinks=true,
   breaklinks=true,
+  colorlinks=false,
   pdftitle={\thetitle}
 }
 

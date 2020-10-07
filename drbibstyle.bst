@@ -388,7 +388,7 @@ FUNCTION {bibinfo.warn}
 FUNCTION {format.url}
 { url empty$
     { "" }
-    { "\urlprefix\url{" url * "}" * }
+    { "\urlprefix\biburl{" url * "}" * }
   if$
 }
 
