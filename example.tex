@@ -339,9 +339,19 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 
 %--- Footnotes ---------------------------------------------------------
 
-% Footnotes
 \usepackage[bottom]{footmisc}
-\setlength{\footnotemargin}{0.6em}
+
+% make linebreaks start under footnote label
+\setlength{\footnotemargin}{0.3em}
+% move footnoterule to the right
+\makeatletter
+  \let\oldfootnoterule=\footnoterule
+  \def\footnoterule{\moveright0.8cm\vbox{\oldfootnoterule}}
+\makeatother
+
+\let\oldfootnote\footnote
+\renewcommand\footnote[1]{%
+\oldfootnote{\hspace{0.6mm}#1}}
 
 % if you have code in your footnotes, the million macro march
 % kind of bumps into itself.
@@ -556,7 +566,7 @@ Te usu movet nominavi, eu eum quod consul. Justo eligendi concludaturque no eam,
 \hypertarget{figures-and-tables}{%
 \section{Figures and Tables}\label{figures-and-tables}}
 
-Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors \citep{Howarth1996}. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys \citep{Bancroft1897}, the genotype composition of a population \citep{DeFinetti1926}, soil composition \citep{Davis1927}, or the potential for flammability given different mixtures of three gases \citep{Zabetakis1965}. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions \citep{Kvitkin1932}.\footnote{A footnote \citep{Ware2013, Denil2015}.}
+Variably referred to as de Finetti-, simplex-, or triangle plot, the ternary diagram is based upon a coordinate system that maps each point within an equilateral triangle to a unique three-part composition and as such has found use wherever the problem domain spans three parts of a whole. The diagram emerged during the 18th century as a means of illustrating relative mixtures of primary colors \citep{Howarth1996}. It was subsequently adopted as the standard method to depict phase transitions in three-component alloys \citep{Bancroft1897}, the genotype composition of a population \citep{DeFinetti1926}, soil composition \citep{Davis1927}, or the potential for flammability given different mixtures of three gases \citep{Zabetakis1965}. In the social sciences, ternary diagrams depict population compositions along demographic characteristics, with an early example appearing in the USSR's first census report showing the distribution of workers across labor market segments in various regions \citep{Kvitkin1932}.\footnote{A footnote \citep{Ware2013, Denil2015}. Soluta legimus qui id, nam semper malorum ut. Est magna clita civibus id. Pro ne summo animal. Ne mucius partiendo sit, ne eos natum quodsi periculis.}
 
 \begin{figure}
 \centering

@@ -382,9 +382,19 @@ $endif$
 
 %--- Footnotes ---------------------------------------------------------
 
-% Footnotes
 \usepackage[bottom]{footmisc}
-\setlength{\footnotemargin}{0.6em}
+
+% make linebreaks start under footnote label
+\setlength{\footnotemargin}{0.3em}
+% move footnoterule to the right
+\makeatletter
+  \let\oldfootnoterule=\footnoterule
+  \def\footnoterule{\moveright0.8cm\vbox{\oldfootnoterule}}
+\makeatother
+
+\let\oldfootnote\footnote
+\renewcommand\footnote[1]{%
+\oldfootnote{\hspace{0.6mm}#1}}
 
 % if you have code in your footnotes, the million macro march
 % kind of bumps into itself.
