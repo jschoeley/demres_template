@@ -711,8 +711,8 @@ FUNCTION {format.date}
 FUNCTION {format.btitle}
 { title "title" bibinfo.check
   duplicate$ empty$ 'skip$
-    {
-      emphasize
+   {
+      "t" change.case$ emphasize
     }
   if$
 }
