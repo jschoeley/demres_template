@@ -3,7 +3,7 @@
 %%% Jonas Schöley
 %%% jschoeley@gmail.com
 %%%
-%%% 2020-09-10
+%%% 2021-02-19
 %%%
 %%% Depends on file "drbibstyle.bst" for custom bibliography styling,
 %%% "drtitling" for title formating,
@@ -156,7 +156,7 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
 \setcitestyle{aysep={}}
 \bibliographystyle{drbibstyle}
 % special doi and url format in bibliography (used in .bst file)
-\newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
+\newcommand{\doi}[1]{\href{https://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
     % use url command to escape special chars in url
 \newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{\url{#1}}}}
     % which url prefix to use
@@ -325,7 +325,7 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
   \fancyhead[LE]{\footnotesize\emph{\theheadingauthor}: \theheadingtitle} \chead{}
   \fancyhead[RO]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle}
   \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
-  \fancyfoot[LO,RE]{\drfootersize\href{}{http://www.demographic-research.org}}
+  \fancyfoot[LO,RE]{\drfootersize\href{}{https://www.demographic-research.org}}
 }
 % header and footer on title page
 \fancypagestyle{title}{
@@ -334,7 +334,7 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
   \fancyhead[RO]{}
   \fancyhead[CO,CE]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle\\[1mm]\emph{\thecat}}
   \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
-  \fancyfoot[LO,RE]{\drfootersize\href{}{http://www.demographic-research.org}}
+  \fancyfoot[LO,RE]{\drfootersize\href{}{https://www.demographic-research.org}}
 }
 
 %--- Footnotes ---------------------------------------------------------
@@ -475,7 +475,7 @@ organized by Guest Editors Tim Riffe, Sebastian Klüsener, and Nikola Sander.}
     \bigskip
     \fontfamily{ptm}\selectfont\large{\textbf{VOLUME \thevolume, ARTICLE \thearticle, PAGES \drpages}}\\
     \fontfamily{ptm}\selectfont\large{\textbf{PUBLISHED \MakeUppercase{\thedatepub}}}\\
-    \fontfamily{ptm}\selectfont\normalsize{\href{}{http://www.demographic-research.org/Volumes/Vol\thevolume/\thearticle/}}\\
+    \fontfamily{ptm}\selectfont\normalsize{\href{}{https://www.demographic-research.org/Volumes/Vol\thevolume/\thearticle/}}\\
     \fontfamily{ptm}\selectfont\normalsize{DOI: 10.4054/DemRes.\the\year.\thevolume.\thearticle}\\
     \medskip
     \fontfamily{ptm}\selectfont\large{\emph{\thecat}}\\
@@ -753,107 +753,108 @@ I'd like to thank my husband whose caring love allowed me to fully concentrate o
   \renewcommand{\thetable}{\currentappendixfloatlabel-\arabic{table}}
 
   \begin{Shaded}
-  \begin{Highlighting}[]
-  \CommentTok{#' Get Stratified Life-table From Survival Data}
-  \CommentTok{#'}
-  \CommentTok{#' Aggregate individual level survival data into a stratified}
-  \CommentTok{#' life-tables with prespecified age-groups using the assumptions of}
-  \CommentTok{#' piecewise-constant hazards.}
-  \CommentTok{#'}
-  \CommentTok{#' @param df a data frame}
-  \CommentTok{#' @param x time at censoring or event}
-  \CommentTok{#' @param event event indicator, 0 if censoring, 1 if event}
-  \CommentTok{#' @param cuts vector of cuts for life-table age groups}
-  \CommentTok{#' @param ... strata}
-  \CommentTok{#'}
-  \CommentTok{#' @author Jonas Schöley}
-  \NormalTok{GetLifeTable <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (df, x, event, cuts, ...) \{}
-  
-  \NormalTok{  x_i =}\StringTok{ }\KeywordTok{enquo}\NormalTok{(x); event_i =}\StringTok{ }\KeywordTok{enquo}\NormalTok{(event); strata =}\StringTok{ }\KeywordTok{enexprs}\NormalTok{(...)}
-  
-  \NormalTok{  lt <-}
-  \StringTok{    }\NormalTok{df }\OperatorTok{%>%}
-  \StringTok{    }\CommentTok{# aggregate individual level event and censoring times}
-  \StringTok{    }\CommentTok{# into predefined age groups}
-  \StringTok{    }\KeywordTok{mutate}\NormalTok{(}
-        \DataTypeTok{j =}
-          \KeywordTok{.bincode}\NormalTok{(}
-            \DataTypeTok{x =} \OperatorTok{!!}\NormalTok{x_i, }\DataTypeTok{breaks =}\NormalTok{ cuts,}
-            \CommentTok{# [a, b)}
-            \DataTypeTok{right =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{include.lowest =} \OtherTok{FALSE}
-  \NormalTok{        ),}
-        \DataTypeTok{x_jk =}
-  \NormalTok{        cuts[j]}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{group_by}\NormalTok{(}\OperatorTok{!!!}\NormalTok{strata, j, x_jk) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{summarise}\NormalTok{(}
-        \CommentTok{# total observed deaths in interval}
-        \DataTypeTok{D_jk =} \KeywordTok{sum}\NormalTok{(}\OperatorTok{!!}\NormalTok{event_i),}
-        \CommentTok{# total observed censorings in interval}
-        \DataTypeTok{C_jk =} \KeywordTok{sum}\NormalTok{(}\OperatorTok{!}\NormalTok{(}\OperatorTok{!!}\NormalTok{event_i)),}
-        \CommentTok{# average time spent in interval for}
-        \CommentTok{# those who leave during interval (by death or censoring)}
-        \DataTypeTok{a_jk =} \KeywordTok{mean}\NormalTok{(}\OperatorTok{!!}\NormalTok{x_i }\OperatorTok{-}\StringTok{ }\KeywordTok{first}\NormalTok{(x_jk))}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}
-  \StringTok{    }\CommentTok{# add predefined age intervals to table where no deaths or}
-  \StringTok{    }\CommentTok{# censorings occoured}
-  \StringTok{    }\KeywordTok{complete}\NormalTok{(}
-        \KeywordTok{nesting}\NormalTok{(}\DataTypeTok{x_jk =} \KeywordTok{head}\NormalTok{(cuts, }\DecValTok{-1}\NormalTok{), }\DataTypeTok{j =} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(}\KeywordTok{head}\NormalTok{(cuts, }\DecValTok{-1}\NormalTok{))),}
-        \KeywordTok{nesting}\NormalTok{(}\OperatorTok{!!!}\NormalTok{strata),}
-        \DataTypeTok{fill =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{D_jk =} \DecValTok{0}\NormalTok{, }\DataTypeTok{C_jk =} \DecValTok{0}\NormalTok{, }\DataTypeTok{a_jk =} \OtherTok{NA}\NormalTok{)}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{arrange}\NormalTok{(}\OperatorTok{!!!}\NormalTok{strata, x_jk) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{mutate}\NormalTok{(}
-        \DataTypeTok{k =} \KeywordTok{group_indices}\NormalTok{(., }\OperatorTok{!!!}\NormalTok{strata)}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{group_by}\NormalTok{(k) }\OperatorTok{%>%}
-  \StringTok{    }\CommentTok{# calculate life-table}
-  \StringTok{    }\KeywordTok{mutate}\NormalTok{(}
-        \CommentTok{# width of the interval}
-        \DataTypeTok{n_jk =}
-          \KeywordTok{c}\NormalTok{(}\KeywordTok{diff}\NormalTok{(x_jk), }\KeywordTok{last}\NormalTok{(cuts)}\OperatorTok{-}\KeywordTok{last}\NormalTok{(x_jk)),}
-        \CommentTok{# observed population alive at start of interval}
-        \DataTypeTok{N_jk =}
-          \KeywordTok{head}\NormalTok{(}\KeywordTok{cumsum}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\KeywordTok{sum}\NormalTok{(C_jk}\OperatorTok{+}\NormalTok{D_jk), }\OperatorTok{-}\NormalTok{(C_jk}\OperatorTok{+}\NormalTok{D_jk))), }\DecValTok{-1}\NormalTok{),}
-        \CommentTok{# total person-time of exposure over interval}
-        \DataTypeTok{O_jk =}
-  \NormalTok{        (N_jk}\OperatorTok{-}\NormalTok{D_jk}\OperatorTok{-}\NormalTok{C_jk)}\OperatorTok{*}\NormalTok{n_jk }\OperatorTok{+}
-  \StringTok{        }\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(a_jk), }\DecValTok{0}\NormalTok{, a_jk}\OperatorTok{*}\NormalTok{(D_jk}\OperatorTok{+}\NormalTok{C_jk)),}
-        \CommentTok{# mortality rate over interval}
-        \DataTypeTok{m_jk =}
-          \KeywordTok{ifelse}\NormalTok{(O_jk }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, D_jk}\OperatorTok{/}\NormalTok{O_jk),}
-        \CommentTok{# probability of surviving interval}
-        \CommentTok{# assuming constant force of mortality}
-        \DataTypeTok{p_jk =}
-          \KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\NormalTok{m_jk}\OperatorTok{*}\NormalTok{n_jk),}
-        \CommentTok{# probability of death during the interval given survival}
-        \CommentTok{# to interval}
-        \DataTypeTok{q_jk =}
-          \DecValTok{1}\OperatorTok{-}\NormalTok{p_jk,}
-        \CommentTok{# probability of survival until interval start}
-        \DataTypeTok{l_jk =}
-          \KeywordTok{cumprod}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{head}\NormalTok{(p_jk, }\DecValTok{-1}\NormalTok{))),}
-        \CommentTok{# probability of death in interval}
-        \DataTypeTok{d_jk =}
-          \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\KeywordTok{diff}\NormalTok{(l_jk), }\KeywordTok{last}\NormalTok{(l_jk)}\OperatorTok{*}\KeywordTok{last}\NormalTok{(q_jk))}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\CommentTok{# distribution of stratum-specific exposures by age}
-  \StringTok{    }\KeywordTok{group_by}\NormalTok{(j) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{mutate}\NormalTok{(}
-        \DataTypeTok{pi_jk =}\NormalTok{ O_jk}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(O_jk)}
-  \NormalTok{    ) }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}
-  \StringTok{    }\KeywordTok{select}\NormalTok{(}
-  \NormalTok{      k, j, }\OperatorTok{!!!}\NormalTok{strata, x_jk, n_jk, N_jk, a_jk, O_jk, D_jk, C_jk,}
-  \NormalTok{      m_jk, q_jk, l_jk, d_jk, pi_jk}
-  \NormalTok{    )}
-  
-    \KeywordTok{return}\NormalTok{(lt)}
-  
-  \NormalTok{\}}
-  \end{Highlighting}
-  \end{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\textquotesingle{} Get Stratified Life{-}table From Survival Data}
+\CommentTok{\#\textquotesingle{}}
+\CommentTok{\#\textquotesingle{} Aggregate individual level survival data into a stratified}
+\CommentTok{\#\textquotesingle{} life{-}tables with prespecified age{-}groups using the assumptions of}
+\CommentTok{\#\textquotesingle{} piecewise{-}constant hazards.}
+\CommentTok{\#\textquotesingle{}}
+\CommentTok{\#\textquotesingle{} @param df a data frame}
+\CommentTok{\#\textquotesingle{} @param x time at censoring or event}
+\CommentTok{\#\textquotesingle{} @param event event indicator, 0 if censoring, 1 if event}
+\CommentTok{\#\textquotesingle{} @param cuts vector of cuts for life{-}table age groups}
+\CommentTok{\#\textquotesingle{} @param ... strata}
+\CommentTok{\#\textquotesingle{}}
+\CommentTok{\#\textquotesingle{} @author Jonas Schöley}
+\NormalTok{GetLifeTable }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (df, x, event, cuts, ...) \{}
+
+\NormalTok{  x\_i }\OtherTok{=} \FunctionTok{enquo}\NormalTok{(x); event\_i }\OtherTok{=} \FunctionTok{enquo}\NormalTok{(event); strata }\OtherTok{=} \FunctionTok{enexprs}\NormalTok{(...)}
+
+\NormalTok{  lt }\OtherTok{\textless{}{-}}
+\NormalTok{    df }\SpecialCharTok{\%\textgreater{}\%}
+    \CommentTok{\# aggregate individual level event and censoring times}
+    \CommentTok{\# into predefined age groups}
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{j =}
+        \FunctionTok{.bincode}\NormalTok{(}
+          \AttributeTok{x =} \SpecialCharTok{!!}\NormalTok{x\_i, }\AttributeTok{breaks =}\NormalTok{ cuts,}
+          \CommentTok{\# [a, b)}
+          \AttributeTok{right =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{include.lowest =} \ConstantTok{FALSE}
+\NormalTok{        ),}
+      \AttributeTok{x\_jk =}
+\NormalTok{        cuts[j]}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{group\_by}\NormalTok{(}\SpecialCharTok{!!!}\NormalTok{strata, j, x\_jk) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{summarise}\NormalTok{(}
+      \CommentTok{\# total observed deaths in interval}
+      \AttributeTok{D\_jk =} \FunctionTok{sum}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{event\_i),}
+      \CommentTok{\# total observed censorings in interval}
+      \AttributeTok{C\_jk =} \FunctionTok{sum}\NormalTok{(}\SpecialCharTok{!}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{event\_i)),}
+      \CommentTok{\# average time spent in interval for}
+      \CommentTok{\# those who leave during interval (by death or censoring)}
+      \AttributeTok{a\_jk =} \FunctionTok{mean}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{x\_i }\SpecialCharTok{{-}} \FunctionTok{first}\NormalTok{(x\_jk))}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+    \CommentTok{\# add predefined age intervals to table where no deaths or}
+    \CommentTok{\# censorings occoured}
+    \FunctionTok{complete}\NormalTok{(}
+      \FunctionTok{nesting}\NormalTok{(}\AttributeTok{x\_jk =} \FunctionTok{head}\NormalTok{(cuts, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\AttributeTok{j =} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(}\FunctionTok{head}\NormalTok{(cuts, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{))),}
+      \FunctionTok{nesting}\NormalTok{(}\SpecialCharTok{!!!}\NormalTok{strata),}
+      \AttributeTok{fill =} \FunctionTok{list}\NormalTok{(}\AttributeTok{D\_jk =} \DecValTok{0}\NormalTok{, }\AttributeTok{C\_jk =} \DecValTok{0}\NormalTok{, }\AttributeTok{a\_jk =} \ConstantTok{NA}\NormalTok{)}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{arrange}\NormalTok{(}\SpecialCharTok{!!!}\NormalTok{strata, x\_jk) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{k =} \FunctionTok{group\_indices}\NormalTok{(., }\SpecialCharTok{!!!}\NormalTok{strata)}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{group\_by}\NormalTok{(k) }\SpecialCharTok{\%\textgreater{}\%}
+    \CommentTok{\# calculate life{-}table}
+    \FunctionTok{mutate}\NormalTok{(}
+      \CommentTok{\# width of the interval}
+      \AttributeTok{n\_jk =}
+        \FunctionTok{c}\NormalTok{(}\FunctionTok{diff}\NormalTok{(x\_jk), }\FunctionTok{last}\NormalTok{(cuts)}\SpecialCharTok{{-}}\FunctionTok{last}\NormalTok{(x\_jk)),}
+      \CommentTok{\# observed population alive at start of interval}
+      \AttributeTok{N\_jk =}
+        \FunctionTok{head}\NormalTok{(}\FunctionTok{cumsum}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{sum}\NormalTok{(C\_jk}\SpecialCharTok{+}\NormalTok{D\_jk), }\SpecialCharTok{{-}}\NormalTok{(C\_jk}\SpecialCharTok{+}\NormalTok{D\_jk))), }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{),}
+      \CommentTok{\# total person{-}time of exposure over interval}
+      \AttributeTok{O\_jk =}
+\NormalTok{        (N\_jk}\SpecialCharTok{{-}}\NormalTok{D\_jk}\SpecialCharTok{{-}}\NormalTok{C\_jk)}\SpecialCharTok{*}\NormalTok{n\_jk }\SpecialCharTok{+}
+        \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(a\_jk), }\DecValTok{0}\NormalTok{, a\_jk}\SpecialCharTok{*}\NormalTok{(D\_jk}\SpecialCharTok{+}\NormalTok{C\_jk)),}
+      \CommentTok{\# mortality rate over interval}
+      \AttributeTok{m\_jk =}
+        \FunctionTok{ifelse}\NormalTok{(O\_jk }\SpecialCharTok{==} \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, D\_jk}\SpecialCharTok{/}\NormalTok{O\_jk),}
+      \CommentTok{\# probability of surviving interval}
+      \CommentTok{\# assuming constant force of mortality}
+      \AttributeTok{p\_jk =}
+        \FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{m\_jk}\SpecialCharTok{*}\NormalTok{n\_jk),}
+      \CommentTok{\# probability of death during the interval given survival}
+      \CommentTok{\# to interval}
+      \AttributeTok{q\_jk =}
+        \DecValTok{1}\SpecialCharTok{{-}}\NormalTok{p\_jk,}
+      \CommentTok{\# probability of survival until interval start}
+      \AttributeTok{l\_jk =}
+        \FunctionTok{cumprod}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FunctionTok{head}\NormalTok{(p\_jk, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{))),}
+      \CommentTok{\# probability of death in interval}
+      \AttributeTok{d\_jk =}
+        \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{diff}\NormalTok{(l\_jk), }\FunctionTok{last}\NormalTok{(l\_jk)}\SpecialCharTok{*}\FunctionTok{last}\NormalTok{(q\_jk))}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \CommentTok{\# distribution of stratum{-}specific exposures by age}
+    \FunctionTok{group\_by}\NormalTok{(j) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{pi\_jk =}\NormalTok{ O\_jk}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(O\_jk)}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{select}\NormalTok{(}
+\NormalTok{      k, j, }\SpecialCharTok{!!!}\NormalTok{strata, x\_jk, n\_jk, N\_jk, a\_jk, O\_jk, D\_jk, C\_jk,}
+\NormalTok{      m\_jk, q\_jk, l\_jk, d\_jk, pi\_jk}
+\NormalTok{    )}
+
+  \FunctionTok{return}\NormalTok{(lt)}
+
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
 
 
  \stepcounter{currentappendixcount}
@@ -877,11 +878,11 @@ I'd like to thank my husband whose caring love allowed me to fully concentrate o
   \renewcommand{\thetable}{\currentappendixfloatlabel-\arabic{table}}
 
   \begin{Shaded}
-  \begin{Highlighting}[]
-  \KeywordTok{plot}\NormalTok{(cars)}
-  \end{Highlighting}
-  \end{Shaded}
-  
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(cars)}
+\end{Highlighting}
+\end{Shaded}
+
   \begin{figure}
   \centering
   \includegraphics{example_files/figure-latex/unnamed-chunk-1-1.pdf}

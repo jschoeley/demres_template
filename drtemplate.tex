@@ -3,7 +3,7 @@
 %%% Jonas Schöley
 %%% jschoeley@gmail.com
 %%%
-%%% 2020-09-10
+%%% 2021-02-19
 %%%
 %%% Depends on file "drbibstyle.bst" for custom bibliography styling,
 %%% "drtitling" for title formating,
@@ -199,7 +199,7 @@ $endif$
 \setcitestyle{aysep={}}
 \bibliographystyle{drbibstyle}
 % special doi and url format in bibliography (used in .bst file)
-\newcommand{\doi}[1]{\href{http://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
+\newcommand{\doi}[1]{\href{https://www.dx.doi.org/#1}{\textcolor{blue}{doi:#1}}}
     % use url command to escape special chars in url
 \newcommand{\biburl}[1]{\href{#1}{\textcolor{blue}{\url{#1}}}}
     % which url prefix to use
@@ -368,7 +368,7 @@ $endif$
   \fancyhead[LE]{\footnotesize\emph{\theheadingauthor}: \theheadingtitle} \chead{}
   \fancyhead[RO]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle}
   \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
-  \fancyfoot[LO,RE]{\drfootersize\href{}{http://www.demographic-research.org}}
+  \fancyfoot[LO,RE]{\drfootersize\href{}{https://www.demographic-research.org}}
 }
 % header and footer on title page
 \fancypagestyle{title}{
@@ -377,7 +377,7 @@ $endif$
   \fancyhead[RO]{}
   \fancyhead[CO,CE]{\footnotesize \emph{Demographic Research}: Volume \thevolume, Article \thearticle\\[1mm]\emph{\thecat}}
   \fancyfoot[RO,LE]{\drfootersize \arabic{page}} \cfoot{}
-  \fancyfoot[LO,RE]{\drfootersize\href{}{http://www.demographic-research.org}}
+  \fancyfoot[LO,RE]{\drfootersize\href{}{https://www.demographic-research.org}}
 }
 
 %--- Footnotes ---------------------------------------------------------
@@ -515,7 +515,7 @@ $endif$
     \bigskip
     \fontfamily{ptm}\selectfont\large{\textbf{VOLUME \thevolume, ARTICLE \thearticle, PAGES \drpages}}\\
     \fontfamily{ptm}\selectfont\large{\textbf{PUBLISHED \MakeUppercase{\thedatepub}}}\\
-    \fontfamily{ptm}\selectfont\normalsize{\href{}{http://www.demographic-research.org/Volumes/Vol\thevolume/\thearticle/}}\\
+    \fontfamily{ptm}\selectfont\normalsize{\href{}{https://www.demographic-research.org/Volumes/Vol\thevolume/\thearticle/}}\\
     \fontfamily{ptm}\selectfont\normalsize{DOI: 10.4054/DemRes.\the\year.\thevolume.\thearticle}\\
     \medskip
     \fontfamily{ptm}\selectfont\large{\emph{\thecat}}\\
